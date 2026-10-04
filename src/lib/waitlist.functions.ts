@@ -22,7 +22,7 @@ export const joinWaitlist = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const lovableKey = process.env["LOVABLE_API_KEY"];
     const sheetsKey = process.env["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"];
-    if (!lovableKey || !sheetsKey) throw new Error("Google Sheets não está configurado");
+    if (!sheetsKey) throw new Error("Google Sheets não está configurado");
 
     const timestamp = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" });
     const res = await fetch(
