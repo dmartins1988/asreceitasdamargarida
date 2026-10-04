@@ -4,7 +4,7 @@ import { z } from "zod";
 // Google Sheet "Lista de Espera" (tab "Inscricoes"). Change this ID to use another sheet.
 const SPREADSHEET_ID = "1v62JSfmWWqg9SvYM3UO8UFyWBL2K1ssf7GToe6oGntg";
 const RANGE = "Inscricoes!A:D";
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/google_sheets/v4";
+const SHEETS_API_URL = "https://sheets.googleapis.com/v4";
 
 export const waitlistSchema = z.object({
   nome: z.string().trim().min(1, "Indica o teu nome").max(100),
@@ -20,18 +20,15 @@ export const waitlistSchema = z.object({
 export const joinWaitlist = createServerFn({ method: "POST" })
   .inputValidator((data) => waitlistSchema.parse(data))
   .handler(async ({ data }) => {
-    const lovableKey = process.env["LOVABLE_API_KEY"];
-    const sheetsKey = process.env["AIzaSyDcSvNDk91snfD3LpGfZgwiVM3zLDFNSh8"];
-    if (!sheetsKey) throw new Error("Google Sheets não está configurado");
+    const apiKey = process.env["GOOGLE_SHEETS_API_KEY"];
+    if (!apiKey) throw new Error("Google Sheets não está configurado");
 
     const timestamp = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" });
     const res = await fetch(
-      `${GATEWAY_URL}/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+      `${SHEETS_API_URL}/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS&key=${apiKey}`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "X-Connection-Api-Key": sheetsKey,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ values: [[timestamp, data.nome, data.email, data.telefone]] }),
