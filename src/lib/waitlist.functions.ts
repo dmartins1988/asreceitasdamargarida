@@ -20,7 +20,7 @@ export const waitlistSchema = z.object({
 export const joinWaitlist = createServerFn({ method: "POST" })
   .inputValidator((data) => waitlistSchema.parse(data))
   .handler(async ({ data }) => {
-    const apiKey = process.env["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"];
+    const apiKey = process.env["GOOGLE_SHEETS_API_KEY"];
     if (!apiKey) throw new Error("Google Sheets não está configurado");
 
     const timestamp = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" });
