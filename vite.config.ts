@@ -7,6 +7,13 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Hosted on Hostinger as a plain Node process, not Cloudflare Workers — force
+  // the Nitro "node-server" preset so process.env reads real OS env vars.
+  // (The default "cloudflare-module" preset only populates process.env from the
+  // Workers `env` binding, which Hostinger never provides.)
+  nitro: {
+    preset: "node-server",
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
